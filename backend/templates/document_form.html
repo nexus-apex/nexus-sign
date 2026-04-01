@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}{% if editing %}Edit{% else %}New{% endif %} Document | NexusSign{% endblock %}
+{% block page_title %}{% if editing %}Edit Document{% else %}New Document{% endif %}{% endblock %}
+{% block content %}
+<div class="card" style="max-width:750px">
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-row">
+      <div class="form-group">
+        <label>Title</label>
+        <input type="text" name="title" value="{{ record.title|default:'' }}">
+      </div>
+      <div class="form-group">
+        <label>Sender</label>
+        <input type="text" name="sender" value="{{ record.sender|default:'' }}">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Status</label>
+        <select name="status">
+          <option value="draft" {% if record.status == 'draft' %}selected{% endif %}>Draft</option>
+          <option value="sent" {% if record.status == 'sent' %}selected{% endif %}>Sent</option>
+          <option value="viewed" {% if record.status == 'viewed' %}selected{% endif %}>Viewed</option>
+          <option value="signed" {% if record.status == 'signed' %}selected{% endif %}>Signed</option>
+          <option value="declined" {% if record.status == 'declined' %}selected{% endif %}>Declined</option>
+          <option value="expired" {% if record.status == 'expired' %}selected{% endif %}>Expired</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Signers</label>
+        <input type="number" name="signers" value="{{ record.signers|default:'0' }}">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Sent Date</label>
+        <input type="date" name="sent_date" value="{{ record.sent_date|date:'Y-m-d'|default:'' }}">
+      </div>
+      <div class="form-group">
+        <label>Completed Date</label>
+        <input type="date" name="completed_date" value="{{ record.completed_date|date:'Y-m-d'|default:'' }}">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>File Url</label>
+        <input type="url" name="file_url" value="{{ record.file_url|default:'' }}">
+      </div>
+    </div>
+
+    <div style="display:flex;gap:0.75rem;margin-top:1rem">
+      <button type="submit" class="btn btn-primary">{% if editing %}Update{% else %}Create{% endif %} Document</button>
+      <a href="/documents/" class="btn" style="background:var(--border);color:var(--text)">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

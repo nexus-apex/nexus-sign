@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Signrequests | NexusSign{% endblock %}
+{% block page_title %}Signrequests{% endblock %}
+{% block content %}
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem">
+  <form class="search-bar" method="get" style="flex:1;margin-bottom:0">
+    <input type="text" name="search" value="{{ search }}" placeholder="Search signrequests...">
+    <select name="status" onchange="this.form.submit()">
+      <option value="">All Status</option>
+      <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+      <option value="signed" {% if status_filter == 'signed' %}selected{% endif %}>Signed</option>
+      <option value="declined" {% if status_filter == 'declined' %}selected{% endif %}>Declined</option>
+    </select>
+    <button type="submit" class="btn btn-primary btn-sm">Search</button>
+  </form>
+  <a href="/signrequests/create/" class="btn btn-primary">+ New SignRequest</a>
+</div>
+
+<div class="card">
+  {% if records %}
+  <table>
+    <thead>
+      <tr><th>Document Title</th><th>Signer Name</th><th>Signer Email</th><th>Status</th><th>Sent Date</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+      {% for r in records %}
+      <tr>
+        <td><a href="/signrequests/{{ r.pk }}/edit/"><strong>{{ r.document_title }}</strong></a></td>
+        <td>{{ r.signer_name|default:"-" }}</td>
+        <td style="color:var(--muted)">{{ r.signer_email|default:"-" }}</td>
+        <td><span class="badge badge-blue">{{ r.get_status_display }}</span></td>
+        <td style="color:var(--muted)">{{ r.sent_date|date:"M d, Y"|default:"-" }}</td>
+        <td class="actions">
+          <a href="/signrequests/{{ r.pk }}/edit/" class="btn btn-primary btn-sm">Edit</a>
+          <form method="post" action="/signrequests/{{ r.pk }}/delete/" style="display:inline" onsubmit="return confirm('Delete?')">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-sm">Del</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty">
+    <p>No signrequests found.</p>
+    <a href="/signrequests/create/" class="btn btn-primary" style="margin-top:1rem">Create SignRequest</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
